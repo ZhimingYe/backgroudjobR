@@ -9,3 +9,4 @@ test.R
 ^docs$
 ^pkgdown$
 ^vignettes/articles$
+^\.github$
