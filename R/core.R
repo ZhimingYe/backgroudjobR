@@ -7,7 +7,9 @@ do_job0 <- function(
   maxMemory = NULL,
   performSaving = T,
   fetchSessionInfo = T,
-  activeGC = 0
+  activeGC = 0,
+  env_requirement = "aaa",
+  lib_path = NULL
 ) {
   if (!is.numeric(activeGC)) {
     activeGC <- 0
@@ -34,7 +36,18 @@ do_job0 <- function(
   exprsText <- sapply(exprs, function(e) {
     paste(deparse(e), collapse = " ")
   })
-  evaluateEnv <- new.env()
+  if (identical(env_requirement, "base_env")) {
+    evaluateEnv <- new.env(parent = baseenv())
+  } else {
+    evaluateEnv <- new.env()
+  }
+  if (!is.null(lib_path)) {
+    eval(
+      parse(text = glue::glue(".libPaths({deparse(lib_path)})")),
+      envir = evaluateEnv
+    )
+    cat2("Successful switched libPaths. \n")
+  }
   if (
     is.list(ExternalVariables) &
       !is.data.frame(ExternalVariables)
@@ -94,13 +107,15 @@ do_job0 <- function(
       )
     }
     log_messages <- get(globe_stamp, envir = error_message_env)
-    writeLines(log_messages, con = paste0(globe_stamp, "/run_history.log"))
+    try({
+      writeLines(log_messages, con = paste0(globe_stamp, "/run_history.log"))
+    })
   }
   if (identical(noErrorFlag, F) && performSaving) {
     objs <- mget(ls(envir = evaluateEnv), envir = evaluateEnv)
     obj_save_path00 <- paste0(globe_stamp, "/objs")
     bgSave(objs, obj_save_path00, saveTo = saveTo)
-    cat2(paste0("On error environment saved to: ", obj_save_path00, "\n"))
+    cat2(paste0("On error environment saved to: ", obj_save_path00, "(.qs2 or .rds)\n"))
   }
   if (identical(noErrorFlag, T) && fetchSessionInfo) {
     eval(sessioninfohook, envir = evaluateEnv)
