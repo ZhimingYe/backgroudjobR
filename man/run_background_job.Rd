@@ -45,7 +45,7 @@ be stopped if this limit is exceeded. Default is NULL (no limit).}
 }
 \value{
 A \code{mirai} object representing the background job. Use
-  \code{mirai::resolve()} to check completion status and retrieve results.
+  \code{mirai::unresolved()} to check completion status and retrieve results.
   The object's data slot (\code{object$data}) contains logs.
 }
 \description{
@@ -94,11 +94,11 @@ for (i in seq_along(datasets)) {
 }
 
 # Check job status
-print(mirai::resolve(job1))  # Check if job1 is complete
+print(mirai::unresolved(job1))  # Check if job1 is complete
 
 # Wait for all jobs to complete
 results <- lapply(jobs, function(job) {
-  while (!mirai::resolve(job)) {
+  while (!mirai::unresolved(job)) {
     Sys.sleep(1)  # Wait 1 second before checking again
   }
   return(job$data)  # Get running logs

@@ -6,14 +6,6 @@
 
 <!-- badges: end -->
 
-## Aim
-
-Do you miss RStudio's background jobs feature in terminal, VSCode or in the new developed IDE `Positron`? Though `Positron` have a multiple-console feature, but it is unstable in many cases (See their github issues).
-
-![](man/figures/bgjob.png)
-
-So `backgroudjobR` is developed for solve this problem.
-
 ## Overview
 
 `backgroudjobR` is an R package that provides robust and flexible solutions for executing R scripts with comprehensive error handling, logging, and background processing capabilities. Whether you need to run scripts locally, in the background, or on remote servers, this package offers the tools to do so safely and efficiently. This package is powered by the powerful `mirai` package, for providing the background execution and automatic load balancing framework.
@@ -27,6 +19,14 @@ So `backgroudjobR` is developed for solve this problem.
 -   **🖥️ Server-Friendly**: Create standalone projects for execution with `screen`, `tmux`, or `nohup`
 -   **📊 Memory Monitoring**: Built-in memory usage tracking and limits
 -   **⚡ Parallel Execution**: Support for multiple background jobs with automatic load balancing (by `mirai`)
+
+## Aim
+
+Do you miss RStudio's background jobs feature in terminal, VSCode or in the new developed IDE Positron? Though Positron have a multiple-console feature, but it is unstable in many cases (See their github issues).
+
+![](man/figures/bgjob.png)
+
+So `backgroudjobR` is developed for solve this problem.
 
 ## Installation
 

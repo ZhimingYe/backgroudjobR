@@ -113,7 +113,7 @@ run_local_job <- function(
 #'   \code{gc()} every N lines of code. Default is 0 (no automatic GC).
 #'
 #' @return A \code{mirai} object representing the background job. Use
-#'   \code{mirai::resolve()} to check completion status and retrieve results.
+#'   \code{mirai::unresolved()} to check completion status and retrieve results.
 #'   The object's data slot (\code{object$data}) contains logs.
 #'
 #' @details
@@ -163,11 +163,11 @@ run_local_job <- function(
 #' }
 #'
 #' # Check job status
-#' print(mirai::resolve(job1))  # Check if job1 is complete
+#' print(mirai::unresolved(job1))  # Check if job1 is complete
 #'
 #' # Wait for all jobs to complete
 #' results <- lapply(jobs, function(job) {
-#'   while (!mirai::resolve(job)) {
+#'   while (!mirai::unresolved(job)) {
 #'     Sys.sleep(1)  # Wait 1 second before checking again
 #'   }
 #'   return(job$data)  # Get running logs
