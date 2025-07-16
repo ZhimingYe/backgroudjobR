@@ -1,0 +1,11 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^dev$
+^LICENSE\.md$
+dev
+backgroud_job_*
+test.R
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^vignettes/articles$

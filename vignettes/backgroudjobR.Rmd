@@ -1,0 +1,218 @@
+---
+title: "Get started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Get started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+## Quick Start
+
+### 1. Local Job Execution
+
+Execute an R script safely with error handling:
+
+```r
+library(backgroudjobR)
+
+# Simple execution
+job_id <- run_local_job(.file = "my_analysis.R")
+
+# With external variables and monitoring
+job_id <- run_local_job(
+  .file = "data_processing.R",
+  .external_val = list(
+    input_data = mtcars,
+    output_dir = "results/",
+    threshold = 0.05
+  ),
+  .job_name = "mtcars_analysis",
+  .check_memory_useage = TRUE,
+  .max_memory_useage = 8e9  # 8GB limit
+)
+```
+
+### 2. Background Job Execution
+
+Run jobs in the background using `mirai`:
+
+```r
+library(mirai)
+
+# Setup background workers
+daemons(4)  # Create 4 background processes
+
+# Submit background job
+bg_job <- run_background_job(
+  .file = "long_analysis.R",
+  .target_dictionary = "~/projects/analysis",
+  .external_val = list(data = large_dataset),
+  .job_name = "background_analysis"
+)
+
+# Check if job is complete
+unresolved(bg_job)
+
+# Clean up
+daemons(0)
+```
+
+### 3. Server/Bash Job Creation
+
+Create standalone projects for server execution:
+
+```r
+# Create a project that can run independently
+run_bash_job(
+  .file = "server_analysis.R",
+  .target_dictionary = "/path/to/project",
+  .external_val = list(config = my_config),
+  .job_name = "server_job"
+)
+
+# Then in terminal:
+# cd /path/to/project
+# screen -S analysis Rscript run.R
+```
+
+## Detailed Usage
+
+### Error Handling and Recovery
+
+All functions provide comprehensive error handling:
+
+```r
+job_id <- run_local_job(
+  .file = "risky_script.R",
+  .save_when_error = TRUE,     # Save environment on error
+  .save_method = "qs2",        # Fast compression
+  .job_name = "risky_analysis"
+)
+
+# If an error occurs, you can load the saved environment:
+# error_env <- qs2::qs_read("path/to/saved/environment.qs2")
+```
+
+### Memory Management
+
+Monitor and limit memory usage:
+
+```r
+job_id <- run_local_job(
+  .file = "memory_intensive.R",
+  .check_memory_useage = TRUE,      # Monitor memory
+  .max_memory_useage = 16e9,        # 16GB limit
+  .gc_span = 10                     # GC every 10 lines
+)
+```
+
+### Parallel Background Processing
+
+Execute multiple jobs efficiently:
+
+```r
+library(mirai)
+daemons(8)  # 8 background workers
+
+# Submit multiple jobs
+datasets <- list(data1, data2, data3, data4)
+jobs <- list()
+
+for (i in seq_along(datasets)) {
+  jobs[[i]] <- run_background_job(
+    .file = "process_dataset.R",
+    .target_dictionary = paste0("project_", i),
+    .external_val = list(data = datasets[[i]], id = i),
+    .job_name = paste0("dataset_", i)
+  )
+}
+
+# Wait for all jobs to complete
+results <- lapply(jobs, function(job) {
+  while (unresolved(job)) Sys.sleep(1)
+  return(job$data)
+})
+
+daemons(0)
+```
+
+
+### Powering re-useage of codes
+
+You can easily custom external variables using same R Script. 
+
+```r
+# Complex external environment
+external_vars <- list(
+  # Data objects
+  training_data = my_training_data,
+  test_data = my_test_data,
+  
+  # Configuration
+  config = list(
+    model_type = "random_forest",
+    n_trees = 500,
+    cross_validation_folds = 10
+  ),
+  
+  # Functions
+  custom_metric = function(actual, predicted) {
+    # Custom evaluation metric
+    mean(abs(actual - predicted))
+  },
+  
+  # Metadata
+  run_info = list(
+    timestamp = Sys.time(),
+    user = Sys.info()["user"],
+    version = packageVersion("randomForest")
+  )
+)
+
+job_id <- run_local_job(
+  .file = "ml_pipeline.R",
+  .external_val = external_vars,
+  .job_name = "ml_experiment_v1"
+)
+```
+
+
+## Best Practices
+
+### 1. Resource Management
+
+```r
+# Always set memory limits for production jobs
+run_local_job(
+  .file = "production_script.R",
+  .max_memory_useage = 0.8 * memory.size(max = TRUE),  # 80% of available memory
+  .gc_span = 5,  # Frequent garbage collection
+  .check_memory_useage = TRUE
+)
+```
+
+### 2. Error Recovery
+
+```r
+# Enable error saving for complex jobs
+run_local_job(
+  .file = "complex_analysis.R",
+  .save_when_error = TRUE,
+  .save_method = "qs2",  # Faster than RDS
+  .job_name = "recoverable_job"
+)
+```
+
+### 3. Background Job Management
+
+```r
+# Use appropriate number of daemons
+library(mirai)
+daemons(3)  # Leave one core free, max 8 daemons
+
+# Always clean up
+on.exit(daemons(0))
+```
