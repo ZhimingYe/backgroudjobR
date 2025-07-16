@@ -223,7 +223,8 @@ run_background_job <- function(
     .check_memory_useage = .check_memory_useage,
     .max_memory_useage = .max_memory_useage,
     now_dic = now_dic,
-    .target_dictionary = .target_dictionary
+    .target_dictionary = .target_dictionary,
+    .gc_span = .gc_span
   )
   invisible(m)
 }

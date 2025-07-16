@@ -6,3 +6,4 @@ dev
 backgroud_job_*
 test.R
 docs
+.DS_Store

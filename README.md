@@ -10,6 +10,8 @@
 
 Do you miss RStudio's background jobs feature in terminal, VSCode or in the new developed IDE `Positron`? Though `Positron` have a multiple-console feature, but it is unstable in many cases (See their github issues).
 
+![](man/figures/bgjob.png)
+
 So `backgroudjobR` is developed for solve this problem.
 
 ## Overview
@@ -19,7 +21,7 @@ So `backgroudjobR` is developed for solve this problem.
 ### Key Features
 
 -   **🔒 Safe Execution**: Run R scripts in isolated environments with comprehensive error handling
--   **📝 Comprehensive Logging**: Automatic logging of execution progress, errors, and memory usage (Please refer to `package website`'s `Article` -> `Log Example` for details)
+-   **📝 Comprehensive Logging**: Automatic logging of execution progress, errors, and memory usage (Please refer to `package website`'s `Article` -\> `Log Example` for details)
 -   **💾 Auto-Recovery**: Automatic environment saving when errors occur for debugging
 -   **🚀 Background Processing**: Execute jobs in background using the powerful `mirai` framework
 -   **🖥️ Server-Friendly**: Create standalone projects for execution with `screen`, `tmux`, or `nohup`
