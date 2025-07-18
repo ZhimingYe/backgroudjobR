@@ -1,7 +1,7 @@
 Type: Package
 Package: backgroudjobR
 Title: Execute R Code in Background with Error Handling and Logging
-Version: 0.1.2
+Version: 0.1.4
 Authors@R: 
     person("Zhiming", "Ye", , "garnetcrow@hotmail.com", role = c("aut", "cre"))
 Description: Provides tools to execute R scripts in a controlled
@@ -14,14 +14,14 @@ URL: https://zhimingye.github.io/backgroudjobR/,
 BugReports: https://github.com/ZhimingYe/backgroudjobR/issues
 Imports: 
     glue,
-    lobstr,
     mirai,
-    qs2,
-    xfun
+    qs2
 Suggests: 
     knitr,
+    mockery,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    withr
 Config/Needs/website: rmarkdown
 Config/testthat/edition: 3
 Encoding: UTF-8
