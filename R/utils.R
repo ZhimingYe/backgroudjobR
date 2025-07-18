@@ -48,7 +48,7 @@ messageTracing <- function(x, stamp) {
 
 
 running_time_stamp <- function(self_name = NULL) {
-  stamp0 <- xfun::md5(Sys.time())
+  stamp0 <- md5_one(Sys.time())
   if (!is.null(self_name) && is.character(self_name)) {
     stamp0 <- as.character(self_name)
   } else {
@@ -84,7 +84,7 @@ is_valid_path <- function(path) {
   )
 }
 
-bgSave <- function(object, file, saveTo = "qs2"){
+bgSave <- function(object, file, saveTo = "qs2") {
   if (saveTo == "qs2") {
     if (!"qs2" %in% rownames(installed.packages())) {
       stop("qs2 method should install qs2 package form CRAN. ")
@@ -98,4 +98,43 @@ bgSave <- function(object, file, saveTo = "qs2"){
   obj_save_path00 <- paste0(file, extName_of_savedFile)
   saveFUN(object, obj_save_path00)
   invisible(obj_save_path00)
+}
+
+
+# Memory code cited from
+# https://github.com/r-lib/lobstr/blob/main/R/mem.R
+
+Mem_used <- function() {
+  sum(gc()[, 1] * c(Node_size(), 8))
+}
+
+Node_size <- function() {
+  bit <- 8L * .Machine$sizeof.pointer
+  if (!(bit == 32L || bit == 64L)) {
+    stop("Unknown architecture", call. = FALSE)
+  }
+
+  if (bit == 32L) 28L else 56L
+}
+
+
+# md5_one is cited from:
+# https://github.com/cran/xfun/blob/eb9b401e26de0717944111bffc57fdc4fc7997c8/R/cache.R#L406
+md5_one <- function(x) {
+  # no need to write to a file if md5sum() has the 'bytes' arg (R > 4.4.1)
+  m <- tools::md5sum
+  if ('bytes' %in% names(formals(m))) {
+    f <- NULL
+  } else {
+    f <- tempfile()
+    on.exit(unlink(f), add = TRUE)
+  }
+  s <- serialize(x, NULL, xdr = FALSE)
+  s <- tail(s, -14) # the first 14 bytes contain version info, etc
+  if (is.null(f)) {
+    m(bytes = s)
+  } else {
+    writeBin(s, f)
+    unname(m(f))
+  }
 }

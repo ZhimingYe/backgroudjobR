@@ -376,7 +376,7 @@ run_bash_job <- function(
   "
   )
   if (file.exists(paste0(.target_dictionary, "/run.R"))) {
-    new_file_name <- substr(xfun::md5(Sys.time()), 1, 5)
+    new_file_name <- substr(md5_one(Sys.time()), 1, 5)
     fn2 <- paste0(.target_dictionary, "/", new_file_name, "_run.R")
     writeLines(outputDoc, fn2)
     warning(glue::glue("run.R existed. Automatically rename to {fn2}"))
