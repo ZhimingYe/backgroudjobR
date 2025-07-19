@@ -219,6 +219,7 @@ run_background_job <- function(
     .file = .file,
     .external_val = .external_val,
     .job_name = .job_name,
+    .save_when_error = .save_when_error,
     .save_method0 = .save_method0,
     .check_memory_useage = .check_memory_useage,
     .max_memory_useage = .max_memory_useage,

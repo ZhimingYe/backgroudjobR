@@ -1,7 +1,7 @@
 Type: Package
 Package: backgroudjobR
 Title: Execute R Code in Background with Error Handling and Logging
-Version: 0.1.4
+Version: 0.1.4.1
 Authors@R: 
     person("Zhiming", "Ye", , "garnetcrow@hotmail.com", role = c("aut", "cre"))
 Description: Provides tools to execute R scripts in a controlled
