@@ -1,0 +1,134 @@
+---
+title: "Meet Strange Evaluation Errors?"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Log Example}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+When you face strange condition - when you are manipulating a data frame
+contains indeed a specific var, and it works well in R Console. But
+running in `backgroundjobR` will throw an `not found` error. What's the
+problem?
+
+# Undertanding the NSE behavior
+
+This is caused by several non-standard local evaluation behavior. NSE
+(non-standard evaluation) is typical action in R. Consider below code in
+base R:
+
+```{r}
+df <- data.frame(A = 1:4, B = 2:5)
+ls() # This do not contain a variable named as `A`
+df <- subset(df, A < 3) # But you can also subset the data using `A < 3`
+df
+```
+
+It just to simplify the the complex writing below code:
+
+```{r}
+df <- data.frame(A = 1:4, B = 2:5)
+df <- subset(df, df$A < 3) # We do not need to write `df$` to specifiy 
+df
+```
+
+# The strange error
+
+Now we use `backgroundjobR` to run the following code file:
+
+``` r
+df <- data.frame(A = 1:4, B = 2:5) |> setDT()
+df <- subset(df, A < 3)
+
+library(data.table)
+library(dplyr)
+library(dtplyr) # for data.table
+df <- data.frame(A = 1:4, B = 2:5) |> setDT()
+df <- df |> filter(A < 3)
+
+library(data.table)
+library(dplyr)
+library(dtplyr) # for data.table
+df <- data.frame(A = 1:4, B = 2:5) |> setDT()
+df <- df %>% filter(.$A < 3)
+
+dfres <- lm(A ~ B, data = df) # lm()'s formular evaluation
+
+df <- data.frame(A = 1:4, B = 2:5) |> setDT()
+df <- df[, list(A < 3)]
+```
+
+The output is:
+
+```         
+> run_local_job("test2.R")
+[2025-07-19 15:04:28]---BackgroundJobR Session---
+[2025-07-19 15:04:28]Session ID: backgroud_job_28cb516e41e123441a65
+[2025-07-19 15:04:28]running:(1/15) df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]done:df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]running:(2/15) df <- subset(df, A < 3)
+[2025-07-19 15:04:28]done:df <- subset(df, A < 3)
+[2025-07-19 15:04:28]running:(3/15) library(data.table)
+[2025-07-19 15:04:28]done:library(data.table)
+[2025-07-19 15:04:28]running:(4/15) library(dplyr)
+[2025-07-19 15:04:28]done:library(dplyr)
+[2025-07-19 15:04:28]running:(5/15) library(dtplyr)
+[2025-07-19 15:04:28]done:library(dtplyr)
+[2025-07-19 15:04:28]running:(6/15) df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]done:df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]running:(7/15) df <- filter(df, A < 3)
+[2025-07-19 15:04:28]done:df <- filter(df, A < 3)
+[2025-07-19 15:04:28]running:(8/15) library(data.table)
+[2025-07-19 15:04:28]done:library(data.table)
+[2025-07-19 15:04:28]running:(9/15) library(dplyr)
+[2025-07-19 15:04:28]done:library(dplyr)
+[2025-07-19 15:04:28]running:(10/15) library(dtplyr)
+[2025-07-19 15:04:28]done:library(dtplyr)
+[2025-07-19 15:04:28]running:(11/15) df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]done:df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]running:(12/15) df <- df %>% filter(.$A < 3)
+[2025-07-19 15:04:28]done:df <- df %>% filter(.$A < 3)
+[2025-07-19 15:04:28]running:(13/15) dfres <- lm(A ~ B, data = df)
+[2025-07-19 15:04:28]done:dfres <- lm(A ~ B, data = df)
+[2025-07-19 15:04:28]running:(14/15) df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]done:df <- setDT(data.frame(A = 1:4, B = 2:5))
+[2025-07-19 15:04:28]running:(15/15) df <- df[, list(A < 3)]
+[2025-07-19 15:04:28]Error at Step 15
+[2025-07-19 15:04:28]Error Message:object 'A' not found
+[2025-07-19 15:04:28]This Error might be caused by:
+1) you are USING `data.table` package. It's evaluation is partly not supported.
+See `https://cran.r-project.org/web/packages/data.table/vignettes/datatable-programming.html` for details.
+--
+In this condition, you can use `dtplyr` (https://dtplyr.tidyverse.org/)'s grammar to play with your `data.table`. Because fixing this problem is expensive, so it won't be fixed.
+--
+2) you do NOT assign specific vairable in your code
+[2025-07-19 15:04:28]On error environment saved to: backgroud_job_28cb516e41e123441a65/objs(.qs2 or .rds)
+```
+
+We find that `data.table` can not find `A`.
+
+Base R and tidyverse packages work well. I think these two tools is enough. So we
+won't fix it soon. 
+
+See
+[stackoverflow](https://stackoverflow.com/questions/15913832/eval-and-quote-in-data-table) and `vignette("datatable-programming")` for more details. 
+
+# Solution
+
+So when you face these error, please consider the possible NSE problems.
+This is a known limitaion when using `data.table`. If you meet these
+kind of need, please re-write your code do not using NSE. Like:
+
+``` r
+df <- df[, list(df$A < 3)]
+df <- df[,df$A < 3]
+```
+
+The `dtplyr` (<https://dtplyr.tidyverse.org/>) works well with `eval()`,
+so it cooperates well with `backgroundjobR`. You can easily switch to it
+to do jobs with `data.table`s.
+

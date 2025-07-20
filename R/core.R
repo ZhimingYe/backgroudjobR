@@ -103,6 +103,9 @@ do_job0 <- function(
           errorLine <<- i
           msg <- conditionMessage(e)
           cat2(paste0("Error Message:", msg, "\n"))
+          if(grepl("not found", msg[1])){
+            cat2("This Error might be caused by:\n1) you are USING `data.table` package. It's local non-standard evaluation is partly not supported.\nSee `https://cran.r-project.org/web/packages/data.table/vignettes/datatable-programming.html` for details.\n--\nIn this condition, you can use `dtplyr` (https://dtplyr.tidyverse.org/)'s grammar to play with your `data.table`. This is a known limitation in backgroudjobR. \n--\n2) you do NOT assign specific vairable in your code\n")
+          }
         }
       )
     }
