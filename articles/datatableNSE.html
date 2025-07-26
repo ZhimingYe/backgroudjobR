@@ -165,8 +165,34 @@ In this condition, you can use `dtplyr` (https://dtplyr.tidyverse.org/)'s gramma
 2) you do NOT assign specific vairable in your code
 [2025-07-19 15:04:28]On error environment saved to: backgroud_job_28cb516e41e123441a65/objs(.qs2 or .rds)</code></pre>
 <p>We find that <code>data.table</code> can not find <code>A</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="this-is-not-a-bug">This is not a bug<a class="anchor" aria-label="anchor" href="#this-is-not-a-bug"></a>
+</h2>
 <p>Base R and tidyverse packages work well. I think these two tools is
 enough. So we won’t fix it soon.</p>
+<p>In the famous package based heavily on
+<code><a href="evaluate.r-lib.org/reference/evaluate.html">evaluate::evaluate()</a></code>, an imporved <code><a href="https://rdrr.io/r/base/eval.html" class="external-link">eval()</a></code>, the
+<code>knitr</code> (which supports the full <code>rmarkdown</code> and
+<code>Quarto</code> systems), this issue also exists:</p>
+<pre class="log"><code>── ... ─────────────────────────────────────────────────────────────────────────
+  |..........................                          |  50% [unnamed-chunk-1]
+
+processing file: test.Rmd
+
+
+Error:
+! object 'A' not found
+Backtrace:
+    ▆
+ 1. ├─df[, list(A &lt; 3)]
+ 2. └─data.table:::`[.data.table`(df, , list(A &lt; 3))
+ 3.   └─base::eval(jsub, SDenv, parent.frame())
+ 4.     └─base::eval(jsub, SDenv, parent.frame())
+
+Quitting from test.Rmd:32-35 [unnamed-chunk-2]
+Execution halted</code></pre>
+<p>So this is not a bug to some degree.</p>
 <p>See <a href="https://stackoverflow.com/questions/15913832/eval-and-quote-in-data-table" class="external-link">stackoverflow</a>
 and <code>vignette("datatable-programming")</code> for more details.</p>
 </div>
@@ -177,7 +203,7 @@ and <code>vignette("datatable-programming")</code> for more details.</p>
 problems. This is a known limitaion when using <code>data.table</code>.
 If you meet these kind of need, please re-write your code do not using
 NSE. Like:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">A</span> <span class="op">&lt;</span> <span class="fl">3</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="va">df</span><span class="op">[</span>,<span class="va">df</span><span class="op">$</span><span class="va">A</span> <span class="op">&lt;</span> <span class="fl">3</span><span class="op">]</span></span></code></pre></div>
 <p>The <code>dtplyr</code> (<a href="https://dtplyr.tidyverse.org/" class="external-link uri">https://dtplyr.tidyverse.org/</a>) works well with
