@@ -38,6 +38,16 @@ if (!require(remotes)) install.packages("remotes")
 remotes::install_github("ZhimingYe/backgroudjobR")
 ```
 
+## Get Start
+
+See [package website](https://zhimingye.github.io/backgroudjobR/index.html) for details.
+
+-   Basic [guidance](https://zhimingye.github.io/backgroudjobR/articles/backgroudjobR.html) for usage.
+
+-   The output [example](https://zhimingye.github.io/backgroudjobR/articles/logExample.html) help you understand what this package doing.
+
+-   When you facing [errors](https://zhimingye.github.io/backgroudjobR/articles/datatableNSE.html) in non-standard evaluations?
+
 ## Use Cases
 
 ### 🔬 Research and Data Analysis
@@ -57,10 +67,6 @@ remotes::install_github("ZhimingYe/backgroudjobR")
 -   Safe script testing with automatic environment saving
 -   Detailed logging for troubleshooting
 -   Isolated execution environments
-
-## Getting Help
-
--   Check function documentation: `?run_local_job`
 
 ## Acknowledgments
 
