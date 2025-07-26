@@ -111,11 +111,39 @@ In this condition, you can use `dtplyr` (https://dtplyr.tidyverse.org/)'s gramma
 
 We find that `data.table` can not find `A`.
 
+
+# This is not a bug
+
 Base R and tidyverse packages work well. I think these two tools is enough. So we
 won't fix it soon. 
 
+In the famous package based heavily on `evaluate::evaluate()`, an imporved `eval()`, the `knitr` (which supports the full `rmarkdown` and `Quarto` systems), this issue also exists:
+
+``` log
+── ... ─────────────────────────────────────────────────────────────────────────
+  |..........................                          |  50% [unnamed-chunk-1]
+
+processing file: test.Rmd
+
+
+Error:
+! object 'A' not found
+Backtrace:
+    ▆
+ 1. ├─df[, list(A < 3)]
+ 2. └─data.table:::`[.data.table`(df, , list(A < 3))
+ 3.   └─base::eval(jsub, SDenv, parent.frame())
+ 4.     └─base::eval(jsub, SDenv, parent.frame())
+
+Quitting from test.Rmd:32-35 [unnamed-chunk-2]
+Execution halted
+```
+
+So this is not a bug to some degree. 
+
 See
 [stackoverflow](https://stackoverflow.com/questions/15913832/eval-and-quote-in-data-table) and `vignette("datatable-programming")` for more details. 
+
 
 # Solution
 
